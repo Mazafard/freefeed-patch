@@ -1,0 +1,12 @@
+[Unit]
+Description=patch Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/patch/
+ExecStart=/usr/local/patch/patch
+
+[Install]
+WantedBy=multi-user.target
