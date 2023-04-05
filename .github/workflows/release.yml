@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
@@ -22,7 +22,7 @@ jobs:
   linuxamd64build:
     name: build patch amd64 version
     needs: release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Go
@@ -53,7 +53,7 @@ jobs:
   linuxarm64build:
     name: build patch arm64 version
     needs: release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Go
@@ -86,7 +86,7 @@ jobs:
   linuxs390xbuild:
     name: build patch s390x version
     needs: release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Go
