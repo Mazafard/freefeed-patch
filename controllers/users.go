@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"errors"
 	"feed/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"time"
 )
@@ -17,7 +19,13 @@ func FindUser(ctx *gin.Context) {
 	var user models.User
 	username := ctx.Param("username")
 
-	err := models.DB.Debug().Where("username = ?", username).First(&user).Error
+	err := models.DB.Where("username = ?", username).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Date not specified. Please set a date before proceeding.",
+		})
+		return
+	}
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Content not found",
