@@ -15,9 +15,9 @@ type UpdateBirthdayInput struct {
 // Find a book
 func FindUser(ctx *gin.Context) {
 	var user models.User
-	username := ctx.Param("string")
+	username := ctx.Param("username")
 
-	err := models.DB.Where("username = ?", username).First(&user).Error
+	err := models.DB.Debug().Where("username = ?", username).First(&user).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Content not found",

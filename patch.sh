@@ -80,7 +80,7 @@ confirm() {
 }
 
 confirm_restart() {
-    confirm "confirm to restart patch,xray service will be restart" "y"
+    confirm "confirm to restart patch," "y"
     if [[ $? == 0 ]]; then
         restart
     else
@@ -366,7 +366,7 @@ show_status() {
         echo -e "patch status: ${red}not installed${plain}"
         ;;
     esac
-    show_xray_status
+
 }
 
 show_enable_status() {
@@ -378,23 +378,8 @@ show_enable_status() {
     fi
 }
 
-check_xray_status() {
-    count=$(ps -ef | grep "xray-linux" | grep -v "grep" | wc -l)
-    if [[ count -ne 0 ]]; then
-        return 0
-    else
-        return 1
-    fi
-}
 
-show_xray_status() {
-    check_xray_status
-    if [[ $? == 0 ]]; then
-        echo -e "xray status: ${green}running${plain}"
-    else
-        echo -e "xray status: ${red}stopped${plain}"
-    fi
-}
+
 
 #this will be an entrance for ssl cert issue
 #here we can provide two different methods to issue cert
