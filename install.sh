@@ -79,46 +79,10 @@ install_base() {
     fi
 }
 
-#This function will be called when user installed patch out of sercurity
-config_after_install() {
-    echo -e "${yellow}Install/update finished need to modify panel settings out of security${plain}"
-    read -p "Do you continue,if you type n will skip this at this time[y/n]": config_confirm
-    if [[ x"${config_confirm}" == x"y" || x"${config_confirm}" == x"Y" ]]; then
-        read -p "please set up your username:" config_account
-        echo -e "${yellow}your username will be:${config_account}${plain}"
-        read -p "please set up your password:" config_password
-        echo -e "${yellow}your password will be:${config_password}${plain}"
-        read -p "please set up the panel port:" config_port
-        echo -e "${yellow}your panel port is:${config_port}${plain}"
-        echo -e "${yellow}initializing,wait some time here...${plain}"
-        /usr/local/patch/patch setting -username ${config_account} -password ${config_password}
-        echo -e "${yellow}account name and password set down!${plain}"
-        /usr/local/patch/patch setting -port ${config_port}
-        echo -e "${yellow}panel port set down!${plain}"
-    else
-        echo -e "${red}cancel...${plain}"
-        if [[ ! -f "/etc/patch/patch.db" ]]; then
-            local usernameTemp=$(head -c 6 /dev/urandom | base64)
-            local passwordTemp=$(head -c 6 /dev/urandom | base64)
-            local portTemp=$(echo $RANDOM)
-            /usr/local/patch/patch setting -username ${usernameTemp} -password ${passwordTemp}
-            /usr/local/patch/patch setting -port ${portTemp}
-            echo -e "this is a fresh installation,will generate random login info for security concerns:"
-            echo -e "###############################################"
-            echo -e "${green}user name:${usernameTemp}${plain}"
-            echo -e "${green}user password:${passwordTemp}${plain}"
-            echo -e "${red}web port:${portTemp}${plain}"
-            echo -e "###############################################"
-            echo -e "${red}if you forgot your login info,you can type patch and then type 7 to check after installation${plain}"
-        else
-            echo -e "${red} this is your upgrade,will keep old settings,if you forgot your login info,you can type patch and then type 7 to check${plain}"
-        fi
-    fi
-}
 
 install_patch() {
     systemctl stop patch
-    cd /usr/local/
+    cd /usr/local/ || exit
 
     if [ $# == 0 ]; then
         last_version=$(curl -Ls "https://api.github.com/repos/mazafard/patch/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -149,13 +113,11 @@ install_patch() {
 
     tar zxvf patch-linux-${arch}.tar.gz
     rm patch-linux-${arch}.tar.gz -f
-    cd patch
-    chmod +x patch bin/xray-linux-${arch}
+    cd patch || exit
     cp -f patch.service /etc/systemd/system/
     wget --no-check-certificate -O /usr/bin/patch https://raw.githubusercontent.com/mazafard/patch/master/patch.sh
     chmod +x /usr/local/patch/patch.sh
     chmod +x /usr/bin/patch
-    config_after_install
     systemctl daemon-reload
     systemctl enable patch
     systemctl start patch
